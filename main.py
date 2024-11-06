@@ -1,4 +1,4 @@
-from tkinter import Tk, N, S, E, W, SUNKEN, BOTH, Frame, Canvas
+from tkinter import Tk, N, S, E, W, Frame, Canvas
 from math import sqrt
 
 
@@ -13,66 +13,56 @@ while ...:
         print('\n ! Введите числовое значение\n')
 
 
-class Window(Tk):
-    def __init__(self):
-        super().__init__()
 
-        self.title(' ')
-        self.iconbitmap('icon.ico')
-        self.geometry('350x350')
-        self.attributes('-topmost', 10)
-        self.attributes('-alpha', 0.45)
-        self.resizable(False,False)
+win = Tk()
+win.iconbitmap('icon.ico')
+win.title(" ")
+win.geometry('350x350')
+win.attributes('-topmost', 10)
+win.attributes('-alpha', 0.45)
+win.resizable(False, False)
+win.wm_attributes("-transparentcolor", "white")
 
+frame = Frame(win, bd=1, bg="white")
+frame.grid_rowconfigure(0, weight=1)
+frame.grid_columnconfigure(0, weight=1)
 
-    def show(self):
-        frame = Frame(self, bd=2, relief=SUNKEN)
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_columnconfigure(0, weight=1)
-
-        canvas = Canvas(frame, bd=0, bg='gray')
-        self.w = canvas
-        canvas.grid(row=0, column=0, sticky=N+S+E+W)
-        frame.pack(fill=BOTH, expand=1)
-
-        canvas.bind('<ButtonPress-1>', self.first_touch)
-        canvas.bind('<ButtonRelease-1>', self.second_touch)
-
-        self.mainloop()
+canvas = Canvas(frame, bd=0, bg="gray")
+canvas.grid(row=0, column=0, sticky=N+S+E+W)
+frame.pack(fill="both", expand=1)
 
 
-    def first_touch(self, event):
-        self.x1 = event.x
-        self.y1 = event.y
 
-        try:
-            self.w.delete(self.oval, self.line)
+def first_touch(event):
+    global x1, y1
+    x1, y1 = event.x, event.y
 
-        except AttributeError:
-            pass
+    try:
+        canvas.delete(win.oval, win.line)
 
-        self.oval = self.w.create_oval(
-            self.x1, self.y1,
-            self.x1, self.y1,
-            outline='lime',
-            width=4
-        )
+    except AttributeError:
+        pass
 
+    win.oval = canvas.create_oval(
+        x1, y1,
+        x1, y1,
+        outline='lime',
+        width=4
+    )
 
-    def second_touch(self, event):
-        self.x2 = event.x
-        self.y2 = event.y
+def second_touch(event):
+    x2, y2 = event.x, event.y
 
-        self.line = self.w.create_line(
-            self.x1, self.y1,
-            self.x2, self.y2,
-            fill='lime',
-            arrow='last'
-        )
+    win.line = canvas.create_line(
+        x1, y1,
+        x2, y2,
+        fill='lime',
+        arrow='last'
+    )
 
-        self.title(int(sqrt((self.x2 - self.x1)**2 + (self.y2 - self.y1)**2) / 45 * meters))
+    win.title(int(sqrt((x2 - x1)**2 + (y2 - y1)**2) / 45 * meters))
 
-        
+canvas.bind('<ButtonPress-1>', first_touch)
+canvas.bind('<ButtonRelease-1>', second_touch)
 
-if __name__ == '__main__':
-    Window().show()
+win.mainloop()
